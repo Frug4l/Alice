@@ -20,6 +20,7 @@
             position: relative;
         }
         
+        /* Фон с плавающими сердечками и свинками */
         #background {
             position: fixed;
             top: 0;
@@ -30,23 +31,25 @@
             pointer-events: none;
         }
         
-        .background-element {
+        .floating-element {
             position: absolute;
             font-size: 2.5rem;
-            opacity: 0.7;
-            animation: float 15s infinite linear;
+            opacity: 0.8;
+            pointer-events: auto;
             cursor: pointer;
             user-select: none;
-            transition: transform 0.3s;
+            animation-timing-function: ease-in-out;
+            will-change: transform, left, top;
         }
         
         .heart-bg {
             color: #ff3366;
+            animation: float-heart 25s infinite linear;
         }
         
         .pig-bg {
             color: #ff66b2;
-            animation: float 15s infinite linear, wiggle 4s infinite;
+            animation: float-pig 20s infinite linear;
         }
         
         .container {
@@ -59,21 +62,34 @@
         }
         
         .message-box {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.92);
             border-radius: 25px;
             padding: 60px 40px;
-            box-shadow: 0 20px 50px rgba(255, 0, 102, 0.25);
+            box-shadow: 0 20px 50px rgba(255, 0, 102, 0.3);
             border: 10px solid #ff99cc;
             max-width: 800px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
             z-index: 10;
             position: relative;
             overflow: hidden;
         }
         
+        .message-box::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: sparkle 40s linear infinite;
+        }
+        
         h1 {
             font-size: 5.5rem;
-            text-shadow: 5px 5px 0 #ffb3d9;
+            text-shadow: 5px 5px 0 #ffb3d9, 0 0 20px rgba(255, 0, 102, 0.3);
             margin-bottom: 20px;
             color: #ff0066;
             animation: heartbeat 1.5s infinite;
@@ -103,6 +119,11 @@
             display: inline-block;
             border: 3px dashed #ff99cc;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .subtitle:hover {
+            transform: scale(1.05);
         }
         
         /* Панель управления */
@@ -129,7 +150,6 @@
             gap: 10px;
             box-shadow: 0 6px 20px rgba(255, 102, 178, 0.4);
             transition: all 0.3s;
-            animation: pulse-glow 2s infinite;
         }
         
         .pig-btn:hover {
@@ -141,8 +161,8 @@
             transform: scale(0.95);
         }
         
-        .mute-btn {
-            background: rgba(255, 255, 255, 0.9);
+        .sound-btn {
+            background: rgba(255, 255, 255, 0.95);
             color: #ff3385;
             border: 3px solid #ff99cc;
         }
@@ -164,12 +184,71 @@
             box-shadow: 0 5px 15px rgba(255, 153, 204, 0.3);
         }
         
+        /* Большая свинка */
+        .big-pig {
+            position: fixed;
+            top: 50%;
+            right: 40px;
+            font-size: 7rem;
+            cursor: pointer;
+            z-index: 900;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+            transform: translateY(-50%);
+            animation: pig-float 4s infinite ease-in-out;
+        }
+        
+        .big-pig:hover {
+            animation: pig-wiggle 0.5s infinite;
+        }
+        
+        .big-pig:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+        
         /* Анимации */
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        @keyframes float-heart {
+            0% {
+                transform: translate(0, 100vh) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(calc(100vw * var(--dx, 1)), -100px) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes float-pig {
+            0% {
+                transform: translate(0, 100vh) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(calc(-100vw * var(--dx, 1)), -100px) rotate(-360deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pig-float {
+            0%, 100% { transform: translateY(-50%) translateY(0); }
+            50% { transform: translateY(-50%) translateY(-20px); }
+        }
+        
+        @keyframes pig-wiggle {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(-10deg); }
+            75% { transform: translateY(-50%) rotate(10deg); }
         }
         
         @keyframes heartbeat {
@@ -182,84 +261,33 @@
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0) rotate(-3deg); }
-            50% { transform: translateY(-15px) rotate(-3deg); }
+            50% { transform: translateY(-20px) rotate(-3deg); }
         }
         
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-5deg) scale(1.1); }
-            75% { transform: rotate(5deg) scale(1.1); }
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 6px 20px rgba(255, 102, 178, 0.4); }
-            50% { box-shadow: 0 6px 25px rgba(255, 102, 178, 0.7); }
-        }
-        
-        @keyframes pig-jump {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        /* Свинка для нажатия */
-        .main-pig {
-            position: fixed;
-            bottom: 100px;
-            right: 40px;
-            font-size: 6rem;
-            cursor: pointer;
-            z-index: 900;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-            transition: transform 0.2s;
-            animation: pig-jump 3s infinite ease-in-out;
-        }
-        
-        .main-pig:hover {
-            transform: scale(1.2);
-        }
-        
-        .main-pig:active {
-            animation: none;
-            transform: scale(0.9);
+        @keyframes sparkle {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
         }
         
         /* Индикатор звука */
-        .sound-wave {
+        .sound-indicator {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 20px;
             border: 3px solid #ff99cc;
-            display: none;
+            display: flex;
             align-items: center;
             gap: 10px;
             z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
-        .wave {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 20px;
-        }
-        
-        .wave-bar {
-            width: 4px;
-            background: #ff66b2;
-            border-radius: 2px;
-            animation: wave 0.5s infinite ease-in-out;
-        }
-        
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 15px; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 20px; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 12px; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 18px; }
-        
-        @keyframes wave {
-            0%, 100% { height: 10px; }
-            50% { height: 20px; }
+        .sound-indicator.visible {
+            opacity: 1;
         }
         
         /* Адаптивность */
@@ -267,15 +295,14 @@
             h1 { font-size: 3.5rem; }
             .subtitle { font-size: 1.7rem; }
             .message-box { padding: 40px 20px; }
-            .background-element { font-size: 1.8rem; }
-            .main-pig { font-size: 4rem; bottom: 80px; right: 20px; }
+            .big-pig { font-size: 4rem; right: 20px; }
             .controls { bottom: 10px; right: 10px; }
             .counter { bottom: 10px; left: 10px; font-size: 1.1rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Фон с сердечками и свинками -->
+    <!-- Фон с плавающими элементами -->
     <div id="background"></div>
     
     <!-- Основное содержимое -->
@@ -288,8 +315,8 @@
         </div>
     </div>
     
-    <!-- Большая свинка для нажатия -->
-    <div class="main-pig" id="mainPig">🐷</div>
+    <!-- Большая свинка -->
+    <div class="big-pig" id="bigPig">🐷</div>
     
     <!-- Счетчик хрюканий -->
     <div class="counter">
@@ -298,15 +325,9 @@
     </div>
     
     <!-- Индикатор звука -->
-    <div class="sound-wave" id="soundWave">
-        <div class="wave">
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-        </div>
-        <span>Свинка хрюкает!</span>
+    <div class="sound-indicator" id="soundIndicator">
+        <div style="width: 20px; height: 20px; background: #ff66b2; border-radius: 50%;"></div>
+        <span>Хрюк!</span>
     </div>
     
     <!-- Панель управления -->
@@ -314,211 +335,220 @@
         <button class="pig-btn" id="pigBtn">
             <span>🐷 Хрюкнуть!</span>
         </button>
-        <button class="pig-btn mute-btn" id="muteBtn">
-            <span>🔊 Включить звук</span>
+        <button class="pig-btn sound-btn" id="soundBtn">
+            <span id="soundText">🔊 Звук вкл</span>
         </button>
     </div>
 
-    <!-- Аудио элементы -->
-    <audio id="pigSound1" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-pig-oink-1085.mp3" type="audio/mpeg">
-    </audio>
-    
-    <audio id="pigSound2" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-pig-snort-1095.mp3" type="audio/mpeg">
-    </audio>
-    
-    <audio id="pigSound3" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-animal-squeak-1091.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Аудио элементы для звуков свинки -->
+    <audio id="pigSound1" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-pig-snort-1095.mp3"></audio>
+    <audio id="pigSound2" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-animal-squeak-1091.mp3"></audio>
+    <audio id="pigSound3" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-pig-oink-1085.mp3"></audio>
 
     <script>
         // Глобальные переменные
         let pigCount = 0;
         let isSoundEnabled = true;
-        let pigSounds = [];
-        let audioContext;
+        let floatingElements = [];
+        let audioElements = [];
         
-        // Инициализация
+        // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализация аудио контекста для лучшей производительности
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Сбор всех аудио элементов
-            pigSounds = [
+            // Получаем аудио элементы
+            audioElements = [
                 document.getElementById('pigSound1'),
                 document.getElementById('pigSound2'),
                 document.getElementById('pigSound3')
             ];
             
-            // Предварительная загрузка звуков
-            pigSounds.forEach(sound => {
-                sound.load();
-                sound.volume = 0.7; // Устанавливаем громкость
+            // Устанавливаем громкость
+            audioElements.forEach(audio => {
+                audio.volume = 0.8;
+                audio.preload = 'auto';
             });
             
-            // Инициализация счетчика
-            updateCounter();
-            
-            // Создание фоновых элементов
-            createBackgroundElements();
-            
-            // Установка обработчиков событий
+            // Инициализация интерфейса
+            initFloatingElements();
             setupEventListeners();
             
-            // Автозапуск первого звука для проверки
+            // Предварительная загрузка звуков
             setTimeout(() => {
-                if (isSoundEnabled) {
-                    playCutePigSound();
-                    showSoundWave();
-                }
-            }, 1500);
+                audioElements.forEach(audio => {
+                    audio.load().catch(e => console.log('Звук не загрузился автоматически'));
+                });
+            }, 1000);
+            
+            // Первый хрюк через 2 секунды
+            setTimeout(() => {
+                playPigSound();
+            }, 2000);
         });
         
-        // Создание фоновых элементов
-        function createBackgroundElements() {
+        // Инициализация плавающих элементов
+        function initFloatingElements() {
             const background = document.getElementById('background');
-            const hearts = ['❤️', '💖', '💗', '💓', '💞', '💕', '❣️'];
+            const hearts = ['❤️', '💖', '💗', '💓', '💞', '💕'];
             const pigs = ['🐷', '🐖', '🐽'];
             
-            // Создаем 50 элементов
-            for (let i = 0; i < 50; i++) {
+            // Удаляем старые элементы
+            background.innerHTML = '';
+            floatingElements = [];
+            
+            // Создаем 40 плавающих элементов
+            for (let i = 0; i < 40; i++) {
                 const element = document.createElement('div');
-                element.classList.add('background-element');
-                
-                // Случайно выбираем сердечко или свинку (60% свинок)
-                let isPig = Math.random() > 0.4;
+                const isPig = Math.random() > 0.5;
                 
                 if (isPig) {
-                    const pig = pigs[Math.floor(Math.random() * pigs.length)];
-                    element.classList.add('pig-bg');
-                    element.innerHTML = pig;
-                    element.dataset.isPig = 'true';
+                    element.classList.add('floating-element', 'pig-bg');
+                    element.innerHTML = pigs[Math.floor(Math.random() * pigs.length)];
                 } else {
-                    const heart = hearts[Math.floor(Math.random() * hearts.length)];
-                    element.classList.add('heart-bg');
-                    element.innerHTML = heart;
+                    element.classList.add('floating-element', 'heart-bg');
+                    element.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
                 }
                 
-                // Позиция и анимация
-                const size = 25 + Math.random() * 35;
-                const left = Math.random() * 100;
-                const duration = 12 + Math.random() * 18;
-                const delay = Math.random() * 20;
+                // Случайные параметры
+                const size = 30 + Math.random() * 40;
+                const startX = Math.random() * 100;
+                const animationDuration = 15 + Math.random() * 20;
+                const animationDelay = Math.random() * 10;
+                const dx = 0.5 + Math.random() * 1.5; // Горизонтальное смещение
                 
-                element.style.left = `${left}vw`;
                 element.style.fontSize = `${size}px`;
-                element.style.animationDuration = `${duration}s`;
-                element.style.animationDelay = `${delay}s`;
+                element.style.left = `${startX}vw`;
+                element.style.animationDuration = `${animationDuration}s`;
+                element.style.animationDelay = `${animationDelay}s`;
+                element.style.setProperty('--dx', dx);
                 
                 // Обработчик клика
-                element.addEventListener('click', handleElementClick);
+                element.addEventListener('click', function(e) {
+                    handleElementClick(this, isPig);
+                    e.stopPropagation();
+                });
                 
                 background.appendChild(element);
+                floatingElements.push(element);
             }
         }
         
-        // Обработчик клика по элементам
-        function handleElementClick(event) {
-            const element = event.currentTarget;
-            
+        // Обработка клика по плавающим элементам
+        function handleElementClick(element, isPig) {
             // Анимация клика
-            element.style.transform = 'scale(1.3)';
+            element.style.transform += ' scale(1.3)';
             setTimeout(() => {
-                element.style.transform = '';
+                element.style.transform = element.style.transform.replace(' scale(1.3)', '');
             }, 300);
             
-            // Если это свинка - всегда хрюкаем
-            if (element.dataset.isPig === 'true') {
-                playCutePigSound();
-                element.style.animation = 'wiggle 0.5s';
-            } 
-            // Если сердечко - иногда хрюкаем (25% шанс)
-            else if (Math.random() < 0.25) {
-                playCutePigSound();
+            // Воспроизводим звук
+            if (isPig || Math.random() < 0.3) {
+                playPigSound();
             }
-            
-            event.stopPropagation();
         }
         
-        // Воспроизведение милого звука свинки
-        function playCutePigSound() {
+        // Воспроизведение звука свинки
+        function playPigSound() {
             if (!isSoundEnabled) return;
             
-            // Восстанавливаем аудио контекст если нужно
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-            
             try {
-                // Выбираем случайный звук из трех вариантов
-                const randomSound = pigSounds[Math.floor(Math.random() * pigSounds.length)];
+                // Выбираем случайный звук
+                const randomIndex = Math.floor(Math.random() * audioElements.length);
+                const audio = audioElements[randomIndex];
                 
-                // Сброс и воспроизведение
-                randomSound.currentTime = 0;
-                randomSound.play()
-                    .then(() => {
-                        // Успешное воспроизведение
-                        pigCount++;
-                        updateCounter();
-                        showSoundWave();
-                        
-                        // Анимация большой свинки
-                        const mainPig = document.getElementById('mainPig');
-                        mainPig.style.animation = 'none';
-                        setTimeout(() => {
-                            mainPig.style.animation = 'pig-jump 3s infinite ease-in-out';
-                        }, 10);
-                        mainPig.style.transform = 'scale(1.3)';
-                        setTimeout(() => {
-                            mainPig.style.transform = '';
-                        }, 300);
-                    })
-                    .catch(error => {
-                        console.log('Автовоспроизведение заблокировано, нужно взаимодействие пользователя');
-                        // Показываем инструкцию
-                        alert('Кликните по большой свинке 🐷 или кнопке "Хрюкнуть!", чтобы включить звук!');
-                    });
-                    
+                // Сбрасываем и воспроизводим
+                audio.currentTime = 0;
+                
+                // Промис для воспроизведения
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            // Успешное воспроизведение
+                            onSoundPlayed();
+                        })
+                        .catch(error => {
+                            console.log('Для звука нужно взаимодействие пользователя');
+                            // Показываем подсказку
+                            showSoundHint();
+                        });
+                }
             } catch (error) {
-                console.error('Ошибка воспроизведения звука:', error);
+                console.error('Ошибка воспроизведения:', error);
             }
+        }
+        
+        // Действия после успешного воспроизведения звука
+        function onSoundPlayed() {
+            // Увеличиваем счетчик
+            pigCount++;
+            document.getElementById('pigCounter').textContent = pigCount;
+            
+            // Анимация счетчика
+            const counter = document.getElementById('pigCounter');
+            counter.style.transform = 'scale(1.3)';
+            counter.style.color = '#ff0066';
+            setTimeout(() => {
+                counter.style.transform = 'scale(1)';
+                counter.style.color = '#ff3385';
+            }, 200);
+            
+            // Показываем индикатор
+            showSoundIndicator();
+            
+            // Анимация большой свинки
+            const bigPig = document.getElementById('bigPig');
+            bigPig.style.animation = 'pig-wiggle 0.5s';
+            setTimeout(() => {
+                bigPig.style.animation = 'pig-float 4s infinite ease-in-out';
+            }, 500);
         }
         
         // Показать индикатор звука
-        function showSoundWave() {
-            const soundWave = document.getElementById('soundWave');
-            soundWave.style.display = 'flex';
+        function showSoundIndicator() {
+            const indicator = document.getElementById('soundIndicator');
+            indicator.classList.add('visible');
             
             setTimeout(() => {
-                soundWave.style.display = 'none';
+                indicator.classList.remove('visible');
             }, 1000);
         }
         
-        // Обновление счетчика
-        function updateCounter() {
-            const counterElement = document.getElementById('pigCounter');
-            counterElement.textContent = pigCount;
+        // Показать подсказку о звуке
+        function showSoundHint() {
+            const messageBox = document.querySelector('.message-box');
+            const hint = document.createElement('div');
+            hint.innerHTML = '👆 Кликни по свинке или кнопке для звука!';
+            hint.style.cssText = `
+                position: absolute;
+                bottom: -40px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255, 102, 178, 0.9);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                z-index: 100;
+            `;
             
-            // Анимация счетчика
-            counterElement.style.transform = 'scale(1.3)';
-            counterElement.style.color = '#ff0066';
+            messageBox.appendChild(hint);
+            
             setTimeout(() => {
-                counterElement.style.transform = 'scale(1)';
-                counterElement.style.color = '#ff3385';
-            }, 200);
+                hint.remove();
+            }, 3000);
         }
         
         // Настройка обработчиков событий
         function setupEventListeners() {
             // Большая свинка
-            document.getElementById('mainPig').addEventListener('click', () => {
-                playCutePigSound();
+            document.getElementById('bigPig').addEventListener('click', () => {
+                playPigSound();
             });
             
             // Кнопка хрюканья
             document.getElementById('pigBtn').addEventListener('click', () => {
-                playCutePigSound();
+                playPigSound();
                 
                 // Анимация кнопки
                 const btn = document.getElementById('pigBtn');
@@ -528,83 +558,137 @@
                 }, 200);
             });
             
-            // Кнопка включения/выключения звука
-            document.getElementById('muteBtn').addEventListener('click', () => {
+            // Кнопка звука
+            document.getElementById('soundBtn').addEventListener('click', () => {
                 isSoundEnabled = !isSoundEnabled;
-                const muteBtn = document.getElementById('muteBtn');
+                const soundText = document.getElementById('soundText');
+                const soundBtn = document.getElementById('soundBtn');
                 
                 if (isSoundEnabled) {
-                    muteBtn.innerHTML = '<span>🔊 Включить звук</span>';
-                    // Проиграем тестовый звук
-                    setTimeout(() => playCutePigSound(), 300);
+                    soundText.innerHTML = '🔊 Звук вкл';
+                    soundBtn.style.background = 'rgba(255, 255, 255, 0.95)';
+                    // Тестовый хрюк
+                    setTimeout(() => playPigSound(), 300);
                 } else {
-                    muteBtn.innerHTML = '<span>🔇 Выключить звук</span>';
+                    soundText.innerHTML = '🔇 Звук выкл';
+                    soundBtn.style.background = '#ffcccc';
                 }
             });
             
-            // Подзаголовок тоже можно кликать
+            // Подзаголовок
             document.getElementById('subtitle').addEventListener('click', () => {
-                if (Math.random() < 0.5) {
-                    playCutePigSound();
-                }
+                playPigSound();
             });
             
-            // Случайные хрюканья при простое
-            setInterval(() => {
-                if (isSoundEnabled && pigCount > 0 && Math.random() < 0.2) {
-                    playCutePigSound();
-                }
-            }, 20000); // Каждые 20 секунд
-            
-            // Клик по фону создает сердечки
+            // Клик по фону создает новые элементы
             document.body.addEventListener('click', function(event) {
                 // Игнорируем клики по элементам с обработчиками
-                if (event.target.closest('.background-element, .pig-btn, .main-pig, .counter, .subtitle')) {
+                if (event.target.closest('.floating-element, .pig-btn, .big-pig, .counter, .subtitle, .message-box')) {
                     return;
                 }
                 
-                createFloatingHeart(event.clientX, event.clientY);
-                
-                // Иногда хрюкаем при создании сердечка
-                if (Math.random() < 0.3) {
-                    setTimeout(() => playCutePigSound(), 300);
-                }
+                createFloatingElementAt(event.clientX, event.clientY);
             });
             
-            // Обработка клика для разблокировки аудио
-            document.addEventListener('click', function initAudio() {
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
+            // Случайные автоматические хрюканья
+            setInterval(() => {
+                if (isSoundEnabled && pigCount > 0 && Math.random() < 0.15) {
+                    playPigSound();
                 }
-                // Удаляем после первого клика
-                document.removeEventListener('click', initAudio);
+            }, 15000);
+            
+            // Обновление позиций плавающих элементов
+            setInterval(updateFloatingElements, 50);
+        }
+        
+        // Создать плавающий элемент в позиции клика
+        function createFloatingElementAt(x, y) {
+            const background = document.getElementById('background');
+            const element = document.createElement('div');
+            
+            // Случайно выбираем тип
+            const isPig = Math.random() > 0.7;
+            const pigs = ['🐷', '🐖', '🐽'];
+            const hearts = ['❤️', '💖', '💗'];
+            
+            if (isPig) {
+                element.classList.add('floating-element', 'pig-bg');
+                element.innerHTML = pigs[Math.floor(Math.random() * pigs.length)];
+            } else {
+                element.classList.add('floating-element', 'heart-bg');
+                element.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            }
+            
+            // Параметры
+            const size = 25 + Math.random() * 30;
+            const duration = 10 + Math.random() * 15;
+            const dx = 0.3 + Math.random() * 1.2;
+            
+            element.style.fontSize = `${size}px`;
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+            element.style.animationDuration = `${duration}s`;
+            element.style.setProperty('--dx', dx);
+            
+            element.addEventListener('click', function(e) {
+                handleElementClick(this, isPig);
+                e.stopPropagation();
+            });
+            
+            background.appendChild(element);
+            floatingElements.push(element);
+            
+            // Удаляем через время
+            setTimeout(() => {
+                const index = floatingElements.indexOf(element);
+                if (index > -1) {
+                    floatingElements.splice(index, 1);
+                }
+                if (element.parentNode) {
+                    element.remove();
+                }
+            }, duration * 1000);
+            
+            // Иногда хрюкаем при создании
+            if (isPig || Math.random() < 0.4) {
+                setTimeout(() => playPigSound(), 500);
+            }
+        }
+        
+        // Обновление позиций плавающих элементов
+        function updateFloatingElements() {
+            floatingElements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                
+                // Если элемент вышел за верхнюю границу
+                if (rect.bottom < -50) {
+                    // Перемещаем вниз с новыми параметрами
+                    element.style.top = `calc(100vh + 50px)`;
+                    element.style.left = `${Math.random() * 100}vw`;
+                    
+                    // Новая анимация
+                    const duration = 15 + Math.random() * 20;
+                    element.style.animationDuration = `${duration}s`;
+                }
             });
         }
         
-        // Создание плавающего сердечка
-        function createFloatingHeart(x, y) {
-            const heart = document.createElement('div');
-            heart.classList.add('background-element', 'heart-bg');
-            heart.innerHTML = '❤️';
-            
-            const size = 20 + Math.random() * 25;
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            heart.style.fontSize = `${size}px`;
-            heart.style.animationDuration = `${5 + Math.random() * 10}s`;
-            heart.style.zIndex = '100';
-            
-            heart.addEventListener('click', handleElementClick);
-            
-            document.getElementById('background').appendChild(heart);
-            
-            // Удаляем через 15 секунд
-            setTimeout(() => {
-                if (heart.parentNode) {
-                    heart.remove();
+        // Запускаем постоянное движение
+        setInterval(() => {
+            floatingElements.forEach(element => {
+                // Добавляем небольшие случайные движения
+                if (Math.random() < 0.1) {
+                    const currentTransform = element.style.transform || '';
+                    const wiggleX = (Math.random() - 0.5) * 10;
+                    const wiggleY = (Math.random() - 0.5) * 10;
+                    element.style.transform = `${currentTransform} translate(${wiggleX}px, ${wiggleY}px)`;
+                    
+                    setTimeout(() => {
+                        element.style.transform = currentTransform;
+                    }, 200);
                 }
-            }, 15000);
-        }
+            });
+        }, 1000);
     </script>
 </body>
 </html>
